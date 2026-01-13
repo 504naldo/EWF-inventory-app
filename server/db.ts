@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, inventoryItems, InsertInventoryItem, InventoryItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,50 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getAllInventoryItems() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(inventoryItems);
+}
+
+export async function getInventoryItemsByCategory(category: string) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(inventoryItems).where(eq(inventoryItems.category, category));
+}
+
+export async function searchInventoryItems(query: string) {
+  const db = await getDb();
+  if (!db) return [];
+  const searchPattern = `%${query}%`;
+  return db.select().from(inventoryItems).where(
+    or(
+      like(inventoryItems.productCode, searchPattern),
+      like(inventoryItems.productDescription, searchPattern)
+    )
+  );
+}
+
+export async function createInventoryItem(item: InsertInventoryItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(inventoryItems).values(item);
+}
+
+export async function updateInventoryItem(id: string, updates: Partial<InventoryItem>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(inventoryItems).set(updates).where(eq(inventoryItems.id, id));
+}
+
+export async function updateInventoryQuantity(id: string, quantity: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(inventoryItems).set({ quantity }).where(eq(inventoryItems.id, id));
+}
+
+export async function deleteInventoryItem(id: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(inventoryItems).where(eq(inventoryItems.id, id));
+}
