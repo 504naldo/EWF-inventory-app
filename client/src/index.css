@@ -53,7 +53,7 @@
   --chart-4: oklch(0.45 0.08 120);
   --chart-5: oklch(0.40 0.08 120);
   --radius: 0.65rem;
-  --background: oklch(0.98 0 0);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.235 0.015 65);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.235 0.015 65);

@@ -20,3 +20,6 @@
 - [x] Add logo to login screen (centered above form)
 - [x] Update color scheme based on logo colors
 - [x] Apply clean industrial styling
+
+## UI Updates
+- [x] Change background to pure white

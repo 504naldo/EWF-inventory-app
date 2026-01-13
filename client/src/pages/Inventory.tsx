@@ -108,7 +108,7 @@ export default function Inventory() {
   const isAdmin = user.role === "admin";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <header className="border-b bg-white">
         <div className="container py-4 flex items-center justify-between">
           <button onClick={() => setLocation("/inventory")} className="focus:outline-none">
