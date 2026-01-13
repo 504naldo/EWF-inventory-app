@@ -109,9 +109,15 @@ export default function Inventory() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
+      <header className="border-b bg-white">
         <div className="container py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Inventory Management</h1>
+          <button onClick={() => setLocation("/inventory")} className="focus:outline-none">
+            <img 
+              src="/branding/ewf-logo.png" 
+              alt="Earth Wind and Fire" 
+              className="h-9 md:h-10"
+            />
+          </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
               {user.name} ({user.role})

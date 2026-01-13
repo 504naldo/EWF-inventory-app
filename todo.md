@@ -12,3 +12,11 @@
 - [x] Delete functionality (admin only)
 - [x] Low stock highlight (quantity <= 2)
 - [x] Seed data for 10 sample items
+
+## Branding Updates
+- [x] Extract and save Earth Wind and Fire logo assets
+- [x] Create favicon from three-square mark
+- [x] Add logo to inventory page header (left side, clickable)
+- [x] Add logo to login screen (centered above form)
+- [x] Update color scheme based on logo colors
+- [x] Apply clean industrial styling

@@ -23,11 +23,16 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Inventory Management</h1>
-          <p className="text-muted-foreground">Sign in to access the inventory system</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-6">
+        <div className="text-center space-y-6">
+          <img 
+            src="/branding/ewf-logo.png" 
+            alt="Earth Wind and Fire" 
+            className="mx-auto" 
+            style={{ maxWidth: '240px' }}
+          />
+          <p className="text-gray-600">Sign in to access the inventory system</p>
         </div>
         <Button 
           className="w-full" 
