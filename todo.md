@@ -23,3 +23,6 @@
 
 ## UI Updates
 - [x] Change background to pure white
+
+## Logo Updates
+- [x] Re-extract logo with white background
