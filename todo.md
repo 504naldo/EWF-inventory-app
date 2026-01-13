@@ -28,3 +28,12 @@
 - [x] Re-extract logo with white background
 
 - [x] Replace with correct logo file
+
+## Responsive Redesign
+- [x] Mobile view: card-based layout with large tap targets
+- [x] Desktop view: table layout with category tabs
+- [x] Mobile: dropdown or scrollable tabs for categories
+- [x] Mobile: sticky header with search
+- [x] Responsive breakpoints (mobile <=768px, desktop >=1024px)
+- [x] Optimistic updates for quantity changes
+- [x] PWA manifest and icons

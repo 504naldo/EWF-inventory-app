@@ -24,11 +24,22 @@ export default function Inventory() {
   const { data: allItems = [], isLoading } = trpc.inventory.list.useQuery();
 
   const updateQuantityMutation = trpc.inventory.updateQuantity.useMutation({
-    onSuccess: () => {
-      utils.inventory.list.invalidate();
+    onMutate: async ({ id, quantity }) => {
+      await utils.inventory.list.cancel();
+      const previousItems = utils.inventory.list.getData();
+      
+      utils.inventory.list.setData(undefined, (old) => 
+        old?.map(item => item.id === id ? { ...item, quantity } : item)
+      );
+      
+      return { previousItems };
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      utils.inventory.list.setData(undefined, context?.previousItems);
       toast.error(error.message);
+    },
+    onSettled: () => {
+      utils.inventory.list.invalidate();
     },
   });
 
@@ -109,44 +120,44 @@ export default function Inventory() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b bg-white">
-        <div className="container py-4 flex items-center justify-between">
-          <button onClick={() => setLocation("/inventory")} className="focus:outline-none">
+      <header className="sticky top-0 z-50 border-b bg-white">
+        <div className="container py-3 md:py-4 flex items-center justify-between gap-4">
+          <button onClick={() => setLocation("/inventory")} className="focus:outline-none flex-shrink-0">
             <img 
               src="/branding/ewf-logo.png" 
               alt="Earth Wind and Fire" 
-              className="h-9 md:h-10"
+              className="h-7 md:h-10"
             />
           </button>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="text-xs md:text-sm text-gray-600 hidden sm:inline">
               {user.name} ({user.role})
             </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+            <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs md:text-sm">
+              <LogOut className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+              <span className="hidden md:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container py-6 space-y-6">
-        <div className="flex items-center justify-between gap-4">
+      <main className="container py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <Input
             placeholder="Search by product code or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
+            className="w-full sm:max-w-md"
           />
           {isAdmin && (
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button className="w-full sm:w-auto">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Item
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Add New Item</DialogTitle>
                 </DialogHeader>
@@ -159,7 +170,25 @@ export default function Inventory() {
           )}
         </div>
 
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+        {/* Mobile: Dropdown for categories */}
+        <div className="lg:hidden">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {CATEGORIES.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Desktop: Tabs for categories */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="hidden lg:block">
           <TabsList className="w-full flex-wrap h-auto">
             <TabsTrigger value="all">All</TabsTrigger>
             {CATEGORIES.map((cat) => (
@@ -168,118 +197,225 @@ export default function Inventory() {
               </TabsTrigger>
             ))}
           </TabsList>
-
-          <TabsContent value={selectedCategory} className="mt-6">
-            {isLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="animate-spin h-8 w-8" />
-              </div>
-            ) : filteredItems.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                No items found
-              </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-muted">
-                    <tr>
-                      <th className="text-left p-4 font-semibold">Product Code</th>
-                      <th className="text-left p-4 font-semibold">Description</th>
-                      <th className="text-right p-4 font-semibold">Quantity</th>
-                      <th className="text-right p-4 font-semibold">Current Cost</th>
-                      <th className="text-right p-4 font-semibold">Value</th>
-                      <th className="text-center p-4 font-semibold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredItems.map((item) => {
-                      const value = (item.quantity * item.currentCost) / 100;
-                      const isLowStock = item.quantity <= 2;
-                      
-                      return (
-                        <tr 
-                          key={item.id} 
-                          className={`border-t ${isLowStock ? 'bg-red-50 dark:bg-red-950/20' : ''}`}
-                        >
-                          <td className="p-4 font-mono text-sm">{item.productCode}</td>
-                          <td className="p-4">{item.productDescription}</td>
-                          <td className="p-4 text-right font-semibold">{item.quantity}</td>
-                          <td className="p-4 text-right">${(item.currentCost / 100).toFixed(2)}</td>
-                          <td className="p-4 text-right font-semibold">${value.toFixed(2)}</td>
-                          <td className="p-4">
-                            <div className="flex items-center justify-center gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
-                                disabled={updateQuantityMutation.isPending || item.quantity === 0}
-                              >
-                                -1
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
-                                disabled={updateQuantityMutation.isPending}
-                              >
-                                +1
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleQuantityChange(item.id, item.quantity, 5)}
-                                disabled={updateQuantityMutation.isPending}
-                              >
-                                +5
-                              </Button>
-                              {isAdmin && (
-                                <>
-                                  <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => setEditingItem(item)}
-                                      >
-                                        Edit
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                      <DialogHeader>
-                                        <DialogTitle>Edit Item</DialogTitle>
-                                      </DialogHeader>
-                                      <ItemForm
-                                        initialData={item}
-                                        onSubmit={(data) => updateMutation.mutate({ id: item.id, ...data })}
-                                        isLoading={updateMutation.isPending}
-                                      />
-                                    </DialogContent>
-                                  </Dialog>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={() => {
-                                      if (confirm("Are you sure you want to delete this item?")) {
-                                        deleteMutation.mutate({ id: item.id });
-                                      }
-                                    }}
-                                    disabled={deleteMutation.isPending}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </TabsContent>
         </Tabs>
+
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="animate-spin h-8 w-8" />
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            No items found
+          </div>
+        ) : (
+          <>
+            {/* Mobile: Card View */}
+            <div className="lg:hidden space-y-3">
+              {filteredItems.map((item) => {
+                const value = (item.quantity * item.currentCost) / 100;
+                const isLowStock = item.quantity <= 2;
+                
+                return (
+                  <div 
+                    key={item.id} 
+                    className={`border rounded-lg p-4 space-y-3 ${isLowStock ? 'bg-red-50 border-red-200' : 'bg-white'}`}
+                  >
+                    <div className="space-y-1">
+                      <div className="font-bold text-sm font-mono">{item.productCode}</div>
+                      <div className="text-sm text-gray-700 line-clamp-2">{item.productDescription}</div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-2xl font-bold">{item.quantity}</div>
+                        <div className="text-xs text-gray-500">Quantity</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold">${(item.currentCost / 100).toFixed(2)}</div>
+                        <div className="text-xs text-gray-500">Cost</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold">${value.toFixed(2)}</div>
+                        <div className="text-xs text-gray-500">Value</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
+                        disabled={updateQuantityMutation.isPending || item.quantity === 0}
+                        className="flex-1 h-12 text-lg"
+                      >
+                        -1
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
+                        disabled={updateQuantityMutation.isPending}
+                        className="flex-1 h-12 text-lg"
+                      >
+                        +1
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={() => handleQuantityChange(item.id, item.quantity, 5)}
+                        disabled={updateQuantityMutation.isPending}
+                        className="flex-1 h-12 text-lg"
+                      >
+                        +5
+                      </Button>
+                    </div>
+                    
+                    {isAdmin && (
+                      <div className="flex gap-2 pt-2 border-t">
+                        <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
+                          <DialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setEditingItem(item)}
+                              className="flex-1"
+                            >
+                              Edit
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Edit Item</DialogTitle>
+                            </DialogHeader>
+                            <ItemForm
+                              initialData={item}
+                              onSubmit={(data) => updateMutation.mutate({ id: item.id, ...data })}
+                              isLoading={updateMutation.isPending}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to delete this item?")) {
+                              deleteMutation.mutate({ id: item.id });
+                            }
+                          }}
+                          disabled={deleteMutation.isPending}
+                          className="flex-1"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop: Table View */}
+            <div className="hidden lg:block border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="text-left p-4 font-semibold">Product Code</th>
+                    <th className="text-left p-4 font-semibold">Description</th>
+                    <th className="text-right p-4 font-semibold">Quantity</th>
+                    <th className="text-right p-4 font-semibold">Current Cost</th>
+                    <th className="text-right p-4 font-semibold">Value</th>
+                    <th className="text-center p-4 font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredItems.map((item) => {
+                    const value = (item.quantity * item.currentCost) / 100;
+                    const isLowStock = item.quantity <= 2;
+                    
+                    return (
+                      <tr 
+                        key={item.id} 
+                        className={`border-t ${isLowStock ? 'bg-red-50' : ''}`}
+                      >
+                        <td className="p-4 font-mono text-sm">{item.productCode}</td>
+                        <td className="p-4">{item.productDescription}</td>
+                        <td className="p-4 text-right font-semibold">{item.quantity}</td>
+                        <td className="p-4 text-right">${(item.currentCost / 100).toFixed(2)}</td>
+                        <td className="p-4 text-right font-semibold">${value.toFixed(2)}</td>
+                        <td className="p-4">
+                          <div className="flex items-center justify-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
+                              disabled={updateQuantityMutation.isPending || item.quantity === 0}
+                            >
+                              -1
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
+                              disabled={updateQuantityMutation.isPending}
+                            >
+                              +1
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQuantityChange(item.id, item.quantity, 5)}
+                              disabled={updateQuantityMutation.isPending}
+                            >
+                              +5
+                            </Button>
+                            {isAdmin && (
+                              <>
+                                <Dialog open={editingItem?.id === item.id} onOpenChange={(open) => !open && setEditingItem(null)}>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setEditingItem(item)}
+                                    >
+                                      Edit
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent>
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Item</DialogTitle>
+                                    </DialogHeader>
+                                    <ItemForm
+                                      initialData={item}
+                                      onSubmit={(data) => updateMutation.mutate({ id: item.id, ...data })}
+                                      isLoading={updateMutation.isPending}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    if (confirm("Are you sure you want to delete this item?")) {
+                                      deleteMutation.mutate({ id: item.id });
+                                    }
+                                  }}
+                                  disabled={deleteMutation.isPending}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
