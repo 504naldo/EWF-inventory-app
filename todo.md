@@ -26,3 +26,5 @@
 
 ## Logo Updates
 - [x] Re-extract logo with white background
+
+- [x] Replace with correct logo file
