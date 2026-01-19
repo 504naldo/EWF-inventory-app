@@ -20,6 +20,27 @@ export const appRouter = router({
     }),
   }),
 
+  users: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+      return db.getAllUsers();
+    }),
+    updateRole: protectedProcedure
+      .input(z.object({
+        userId: z.number(),
+        role: z.enum(['admin', 'tech']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+        }
+        await db.updateUserRole(input.userId, input.role);
+        return { success: true };
+      }),
+  }),
+
   inventory: router({
     list: protectedProcedure.query(async () => {
       return db.getAllInventoryItems();

@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO users (openId, name, email, loginMethod, role, createdAt, updatedAt, lastSignedIn)\nVALUES ('jeff-ewandf-admin', 'Jeff', 'jeff@ewandf.ca', 'email', 'admin', NOW(), NOW(), NOW())\nON DUPLICATE KEY UPDATE role = 'admin', email = 'jeff@ewandf.ca', name = 'Jeff';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3sw5HSkWcib4XWH.6275f9f46a78 --database QyyaCR2DgPrWedRZFpvz2E --execute INSERT INTO users (openId, name, email, loginMethod, role, createdAt, updatedAt, lastSignedIn)\nVALUES ('jeff-ewandf-admin', 'Jeff', 'jeff@ewandf.ca', 'email', 'admin', NOW(), NOW(), NOW())\nON DUPLICATE KEY UPDATE role = 'admin', email = 'jeff@ewandf.ca', name = 'Jeff';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 695
+}

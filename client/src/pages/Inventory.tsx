@@ -130,6 +130,16 @@ export default function Inventory() {
             />
           </button>
           <div className="flex items-center gap-2 md:gap-4">
+            {isAdmin && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setLocation("/users")}
+                className="text-xs md:text-sm"
+              >
+                Users
+              </Button>
+            )}
             <span className="text-xs md:text-sm text-gray-600 hidden sm:inline">
               {user.name} ({user.role})
             </span>

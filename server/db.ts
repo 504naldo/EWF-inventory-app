@@ -136,3 +136,21 @@ export async function deleteInventoryItem(id: string) {
   if (!db) throw new Error("Database not available");
   await db.delete(inventoryItems).where(eq(inventoryItems.id, id));
 }
+
+export async function getAllUsers() {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get users: database not available");
+    return [];
+  }
+  return db.select().from(users).orderBy(users.createdAt);
+}
+
+export async function updateUserRole(userId: number, role: 'admin' | 'tech') {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update user role: database not available");
+    throw new Error("Database unavailable");
+  }
+  await db.update(users).set({ role }).where(eq(users.id, userId));
+}

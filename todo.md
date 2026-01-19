@@ -37,3 +37,7 @@
 - [x] Responsive breakpoints (mobile <=768px, desktop >=1024px)
 - [x] Optimistic updates for quantity changes
 - [x] PWA manifest and icons
+
+## User Management
+- [x] Admin management page to view and promote users
+- [x] Backend endpoints for listing users and updating roles
