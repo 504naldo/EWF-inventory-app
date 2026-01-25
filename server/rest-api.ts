@@ -3,7 +3,7 @@ import { appRouter } from './routers';
 import { sdk } from './_core/sdk';
 import type { Request, Response } from 'express';
 import * as db from './db';
-import { verifyPassword, generateToken } from './auth-helpers';
+import { verifyPassword, generateToken, verifyToken } from './auth-helpers';
 
 export const restApiRouter = Router();
 
@@ -58,6 +58,35 @@ restApiRouter.post('/auth/login', async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/auth/me
+restApiRouter.get('/auth/me', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = await verifyToken(token);
+    
+    if (!decoded) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const user = await db.getUserById(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user as any;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    console.error('Auth me error:', error);
+    res.status(401).json({ error: 'Invalid or expired token' });
   }
 });
 

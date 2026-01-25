@@ -55,3 +55,5 @@
 - [x] Implement email/password authentication for mobile app
 - [x] Create API documentation page
 - [x] Update native mobile app with production API URL
+
+- [x] Add GET /api/auth/me endpoint for mobile app

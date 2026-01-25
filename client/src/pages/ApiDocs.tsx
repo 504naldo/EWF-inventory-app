@@ -118,6 +118,44 @@ export default function ApiDocs() {
               </CardContent>
             </Card>
 
+            {/* Get Current User */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-blue-600">GET</Badge>
+                  <code className="text-sm">/auth/me</code>
+                </div>
+                <CardTitle className="text-lg">Get Current User</CardTitle>
+                <CardDescription>
+                  Retrieve the currently authenticated user's information. Requires authentication.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Response (200 OK)</h4>
+                  <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm">
+{`{
+  "id": 1,
+  "openId": "user-openid",
+  "email": "admin@ewandf.ca",
+  "name": "Admin User",
+  "role": "admin",
+  "createdAt": "2025-01-25T00:00:00.000Z",
+  "updatedAt": "2025-01-25T00:00:00.000Z",
+  "lastSignedIn": "2025-01-25T00:00:00.000Z"
+}`}
+                  </pre>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2">Error Responses</h4>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li><code>401</code> - No token provided or invalid token</li>
+                    <li><code>404</code> - User not found</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Logout */}
             <Card>
               <CardHeader>
