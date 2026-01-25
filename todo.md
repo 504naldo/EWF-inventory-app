@@ -41,3 +41,12 @@
 ## User Management
 - [x] Admin management page to view and promote users
 - [x] Backend endpoints for listing users and updating roles
+
+## REST API for Mobile App
+- [x] Add POST /api/auth/login endpoint
+- [x] Add POST /api/auth/logout endpoint
+- [x] Add GET /api/inventory endpoint with category and search filters
+- [x] Add GET /api/inventory/:id endpoint
+- [x] Add POST /api/inventory endpoint
+- [x] Add PATCH /api/inventory/:id endpoint
+- [x] Test all REST endpoints
