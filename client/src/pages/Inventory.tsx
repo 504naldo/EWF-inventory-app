@@ -140,6 +140,14 @@ export default function Inventory() {
                 Users
               </Button>
             )}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setLocation("/api-docs")}
+              className="text-xs md:text-sm"
+            >
+              API
+            </Button>
             <span className="text-xs md:text-sm text-gray-600 hidden sm:inline">
               {user.name} ({user.role})
             </span>

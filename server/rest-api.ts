@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { appRouter } from './routers';
 import { sdk } from './_core/sdk';
 import type { Request, Response } from 'express';
+import * as db from './db';
+import { verifyPassword, generateToken } from './auth-helpers';
 
 export const restApiRouter = Router();
 
@@ -27,11 +29,31 @@ restApiRouter.post('/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // For now, return mock response since Manus OAuth doesn't support email/password
-    // In production, implement your own email/password auth or use the existing OAuth
-    return res.status(501).json({ 
-      error: 'Email/password login not implemented. Use Manus OAuth instead.',
-      message: 'This endpoint needs to be implemented with your auth system'
+    // Find user by email
+    const users = await db.getAllUsers();
+    const user = users.find(u => u.email === email);
+    
+    if (!user || !user.password) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Verify password
+    const isValid = await verifyPassword(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = await generateToken(user.id, user.email!, user.role);
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error('Login error:', error);

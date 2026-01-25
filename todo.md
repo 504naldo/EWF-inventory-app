@@ -50,3 +50,8 @@
 - [x] Add POST /api/inventory endpoint
 - [x] Add PATCH /api/inventory/:id endpoint
 - [x] Test all REST endpoints
+
+## Authentication & API Documentation
+- [x] Implement email/password authentication for mobile app
+- [x] Create API documentation page
+- [x] Update native mobile app with production API URL

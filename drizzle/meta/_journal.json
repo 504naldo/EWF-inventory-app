@@ -15,6 +15,13 @@
       "when": 1768346073420,
       "tag": "0001_graceful_paibok",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1769333965202,
+      "tag": "0002_lethal_mimic",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Login from "./pages/Login";
 import Inventory from "./pages/Inventory";
 import Users from "./pages/Users";
+import ApiDocs from "./pages/ApiDocs";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path={"/login"} component={Login} />
       <Route path={"/inventory"} component={Inventory} />
       <Route path={"/users"} component={Users} />
+      <Route path={"/api-docs"} component={ApiDocs} />
       <Route path={"/"} component={Inventory} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
