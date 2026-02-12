@@ -57,3 +57,8 @@
 - [x] Update native mobile app with production API URL
 
 - [x] Add GET /api/auth/me endpoint for mobile app
+
+## New Categories
+- [x] Add category: "Blaze/PVC Pipe and Fittings"
+- [x] Add category: "Outgoing Jobs"
+- [x] Add category: "Compressor Parts and Accessories"

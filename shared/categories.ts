@@ -9,6 +9,9 @@ export const CATEGORIES = [
   "Smoke Detectors",
   "Backflow",
   "Indicating Devices (Pull Stations, Strobes, Buzzers etc)",
+  "Blaze/PVC Pipe and Fittings",
+  "Outgoing Jobs",
+  "Compressor Parts and Accessories",
   "Miscellaneous",
 ] as const;
 
