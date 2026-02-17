@@ -62,3 +62,10 @@
 - [x] Add category: "Blaze/PVC Pipe and Fittings"
 - [x] Add category: "Outgoing Jobs"
 - [x] Add category: "Compressor Parts and Accessories"
+
+## Additional Categories (Batch 2)
+- [x] Add category: "Air Gauge"
+- [x] Add category: "Water Gauge"
+- [x] Add category: "3-way Valves"
+- [x] Add category: "1/4" accessories"
+- [x] Add category: "wire and cable"

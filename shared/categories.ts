@@ -12,6 +12,11 @@ export const CATEGORIES = [
   "Blaze/PVC Pipe and Fittings",
   "Outgoing Jobs",
   "Compressor Parts and Accessories",
+  "Air Gauge",
+  "Water Gauge",
+  "3-way Valves",
+  "1/4\" accessories",
+  "wire and cable",
   "Miscellaneous",
 ] as const;
 
