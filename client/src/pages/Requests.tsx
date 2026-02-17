@@ -57,6 +57,13 @@ export default function Requests() {
     });
   };
 
+  const handleQuickUpdate = (requestId: string, status: "ready" | "completed") => {
+    updateMutation.mutate({
+      id: requestId,
+      status,
+    });
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -204,13 +211,37 @@ export default function Requests() {
                     Created: {new Date(req.createdAt).toLocaleDateString()}
                   </div>
                   
-                  <Button 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => openEditDialog(req)}
-                  >
-                    Update Status
-                  </Button>
+                  <div className="flex gap-2">
+                    {req.status !== "ready" && req.status !== "completed" && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handleQuickUpdate(req.id, "ready")}
+                        disabled={updateMutation.isPending}
+                      >
+                        Mark Ready
+                      </Button>
+                    )}
+                    {req.status !== "completed" && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => handleQuickUpdate(req.id, "completed")}
+                        disabled={updateMutation.isPending}
+                      >
+                        Complete
+                      </Button>
+                    )}
+                    <Button 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => openEditDialog(req)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -253,13 +284,35 @@ export default function Requests() {
                       </td>
                       <td className="p-3 text-sm">{new Date(req.createdAt).toLocaleDateString()}</td>
                       <td className="p-3">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => openEditDialog(req)}
-                        >
-                          Update
-                        </Button>
+                        <div className="flex gap-2">
+                          {req.status !== "ready" && req.status !== "completed" && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleQuickUpdate(req.id, "ready")}
+                              disabled={updateMutation.isPending}
+                            >
+                              Ready
+                            </Button>
+                          )}
+                          {req.status !== "completed" && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleQuickUpdate(req.id, "completed")}
+                              disabled={updateMutation.isPending}
+                            >
+                              Complete
+                            </Button>
+                          )}
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openEditDialog(req)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

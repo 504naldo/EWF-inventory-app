@@ -83,3 +83,6 @@
 - [x] Build /requests admin inbox page
 - [x] Implement admin notification system (badge + in-app notification)
 - [x] Test complete workflow
+
+## Quick Action Buttons
+- [x] Add Ready and Completed quick action buttons to requests list
