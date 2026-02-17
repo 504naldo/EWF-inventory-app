@@ -69,3 +69,9 @@
 - [x] Add category: "3-way Valves"
 - [x] Add category: "1/4" accessories"
 - [x] Add category: "wire and cable"
+
+## Category Grouping Feature
+- [x] Create category group definitions in shared types
+- [x] Implement grouped dropdown UI component
+- [x] Update Inventory page with grouped navigation
+- [x] Test all category filtering with new UI

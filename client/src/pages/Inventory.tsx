@@ -6,7 +6,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { CATEGORIES } from "@shared/categories";
+import { CATEGORIES, Category } from "@shared/categories";
+import { CATEGORY_GROUPS } from "@shared/category-groups";
+import { CategoryGroupDropdown } from "@/components/CategoryGroupDropdown";
 import { Loader2, LogOut, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
@@ -15,7 +17,7 @@ import { toast } from "sonner";
 export default function Inventory() {
   const { user, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<Category | "All">("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -78,7 +80,7 @@ export default function Inventory() {
   const filteredItems = useMemo(() => {
     let items = allItems;
     
-    if (selectedCategory !== "all") {
+    if (selectedCategory !== "All") {
       items = items.filter(item => item.category === selectedCategory);
     }
     
@@ -190,32 +192,47 @@ export default function Inventory() {
 
         {/* Mobile: Dropdown for categories */}
         <div className="lg:hidden">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Select value={selectedCategory} onValueChange={(val) => setSelectedCategory(val as Category | "All")}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
+              <SelectItem value="All">All Categories</SelectItem>
+              {CATEGORY_GROUPS.map((group) => (
+                <optgroup key={group.id} label={`${group.icon} ${group.name}`}>
+                  {group.categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </optgroup>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Desktop: Tabs for categories */}
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="hidden lg:block">
-          <TabsList className="w-full flex-wrap h-auto">
-            <TabsTrigger value="all">All</TabsTrigger>
-            {CATEGORIES.map((cat) => (
-              <TabsTrigger key={cat} value={cat}>
-                {cat}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        {/* Desktop: Grouped Category Dropdowns */}
+        <div className="hidden lg:flex items-center gap-3 flex-wrap">
+          <button
+            onClick={() => setSelectedCategory("All")}
+            className={`px-4 py-2 rounded-lg border-2 transition-all font-medium text-sm ${
+              selectedCategory === "All"
+                ? "border-[#6B7F39] bg-[#6B7F39] text-white"
+                : "border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:shadow-md"
+            }`}
+          >
+            All Categories
+          </button>
+          {CATEGORY_GROUPS.map((group) => (
+            <CategoryGroupDropdown
+              key={group.id}
+              group={group}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              isActive={false}
+            />
+          ))}
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center py-12">
