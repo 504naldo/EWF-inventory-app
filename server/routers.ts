@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { notifyOwner } from "./_core/notification";
+import { sendEmail } from "./_core/emailNotification";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -169,7 +170,25 @@ export const appRouter = router({
         if (ctx.user.role !== 'admin') {
           throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin only' });
         }
+        
+        // Get request details before updating to send notification
+        const request = await db.getPartsRequestById(input.id);
+        
         await db.updatePartsRequestStatus(input.id, input.status, input.notes);
+        
+        // Send email notification when status changes to 'ready'
+        if (input.status === 'ready' && request && request.createdByEmail) {
+          try {
+            await sendEmail({
+              to: request.createdByEmail,
+              subject: `Parts Ready for Pickup - Job ${request.jobId}`,
+              body: `Your parts request for Job ${request.jobId} is now ready for pickup.\n\nDetails:\n- Category: ${request.category}\n- Product Code: ${request.productCode || 'N/A'}\n- Description: ${request.requestedDescription}\n- Quantity: ${request.quantityRequested}\n\nPlease pick up your parts at your earliest convenience.\n\nView request: https://invmanage-qyyacr2d.manus.space/request-parts`,
+            });
+          } catch (error) {
+            console.error("Failed to send email notification:", error);
+          }
+        }
+        
         return { success: true };
       }),
 

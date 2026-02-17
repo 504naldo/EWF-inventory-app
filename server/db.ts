@@ -222,6 +222,29 @@ export async function getUserPartsRequests(userId: number, filters?: { status?: 
   return db.select().from(partsRequests).where(and(...conditions)).orderBy(sql`${partsRequests.createdAt} DESC`);
 }
 
+export async function getPartsRequestById(id: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select({
+    id: partsRequests.id,
+    jobId: partsRequests.jobId,
+    category: partsRequests.category,
+    productCode: partsRequests.productCode,
+    requestedDescription: partsRequests.requestedDescription,
+    quantityRequested: partsRequests.quantityRequested,
+    priority: partsRequests.priority,
+    status: partsRequests.status,
+    notes: partsRequests.notes,
+    createdBy: partsRequests.createdBy,
+    createdByEmail: users.email,
+    createdAt: partsRequests.createdAt,
+  })
+  .from(partsRequests)
+  .leftJoin(users, eq(partsRequests.createdBy, users.id))
+  .where(eq(partsRequests.id, id));
+  return result[0] || null;
+}
+
 export async function updatePartsRequestStatus(id: string, status: string, notes?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
