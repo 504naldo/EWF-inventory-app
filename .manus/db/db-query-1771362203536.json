@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO users (openId, name, email, loginMethod, role, createdAt, updatedAt) VALUES\n('google-pat-ewandf', 'Pat', 'pat@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-chris-ewandf', 'Chris', 'chris@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-tony-ewandf', 'Tony', 'tony@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-russ-ewandf', 'Russ', 'russ@ewandf.ca', 'google', 'tech', NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3sw5HSkWcib4XWH.6275f9f46a78 --database QyyaCR2DgPrWedRZFpvz2E --execute INSERT INTO users (openId, name, email, loginMethod, role, createdAt, updatedAt) VALUES\n('google-pat-ewandf', 'Pat', 'pat@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-chris-ewandf', 'Chris', 'chris@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-tony-ewandf', 'Tony', 'tony@ewandf.ca', 'google', 'tech', NOW(), NOW()),\n('google-russ-ewandf', 'Russ', 'russ@ewandf.ca', 'google', 'tech', NOW(), NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 87
+}

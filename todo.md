@@ -89,3 +89,9 @@
 
 ## Email Notifications for Ready Status
 - [x] Send email to technician when request status changes to Ready
+
+## Add Technician Users
+- [x] Add Pat (pat@ewandf.ca) as tech user
+- [x] Add Chris (chris@ewandf.ca) as tech user
+- [x] Add Tony (tony@ewandf.ca) as tech user
+- [x] Add Russ (russ@ewandf.ca) as tech user
