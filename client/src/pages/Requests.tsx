@@ -13,7 +13,7 @@ import { toast } from "sonner";
 export default function Requests() {
   const { user, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingRequest, setEditingRequest] = useState<any>(null);
   const [newStatus, setNewStatus] = useState("");
@@ -21,7 +21,7 @@ export default function Requests() {
 
   const utils = trpc.useUtils();
   const { data: requests = [], isLoading } = trpc.partsRequests.list.useQuery({
-    status: statusFilter ? (statusFilter as any) : undefined,
+    status: statusFilter && statusFilter !== "all" ? (statusFilter as any) : undefined,
     search: searchQuery || undefined,
   });
 
@@ -139,7 +139,7 @@ export default function Requests() {
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All statuses</SelectItem>
+              <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="new">New</SelectItem>
               <SelectItem value="ordered">Ordered</SelectItem>
               <SelectItem value="ready">Ready</SelectItem>
