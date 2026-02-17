@@ -199,13 +199,16 @@ export default function Inventory() {
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
               {CATEGORY_GROUPS.map((group) => (
-                <optgroup key={group.id} label={`${group.icon} ${group.name}`}>
+                <div key={group.id}>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">
+                    {group.icon} {group.name}
+                  </div>
                   {group.categories.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
                   ))}
-                </optgroup>
+                </div>
               ))}
             </SelectContent>
           </Select>
