@@ -39,3 +39,21 @@ export const inventoryItems = mysqlTable("inventory_items", {
 
 export type InventoryItem = typeof inventoryItems.$inferSelect;
 export type InsertInventoryItem = typeof inventoryItems.$inferInsert;
+
+export const partsRequests = mysqlTable("parts_requests", {
+  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
+  jobId: varchar("job_id", { length: 255 }).notNull(),
+  category: text("category").notNull(),
+  productCode: varchar("product_code", { length: 255 }),
+  requestedDescription: text("requested_description").notNull(),
+  quantityRequested: int("quantity_requested").notNull(),
+  priority: mysqlEnum("priority", ["normal", "urgent"]).default("normal").notNull(),
+  status: mysqlEnum("status", ["new", "ordered", "ready", "completed", "denied"]).default("new").notNull(),
+  notes: text("notes"),
+  createdBy: int("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PartsRequest = typeof partsRequests.$inferSelect;
+export type InsertPartsRequest = typeof partsRequests.$inferInsert;

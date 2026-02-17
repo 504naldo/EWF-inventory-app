@@ -1,6 +1,6 @@
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, inventoryItems, InsertInventoryItem, InventoryItem } from "../drizzle/schema";
+import { InsertUser, users, inventoryItems, InsertInventoryItem, InventoryItem, partsRequests, InsertPartsRequest } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -164,4 +164,79 @@ export async function getUserById(id: number) {
 
   const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+// Parts Requests
+export async function createPartsRequest(request: InsertPartsRequest) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(partsRequests).values(request);
+  return result[0]?.insertId || crypto.randomUUID();
+}
+
+export async function getAllPartsRequests(filters?: { status?: string; search?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions: any[] = [];
+  if (filters?.status) {
+    conditions.push(eq(partsRequests.status, filters.status as any));
+  }
+  if (filters?.search) {
+    const searchPattern = `%${filters.search}%`;
+    conditions.push(
+      or(
+        like(partsRequests.jobId, searchPattern),
+        like(partsRequests.productCode, searchPattern),
+        like(partsRequests.requestedDescription, searchPattern)
+      )
+    );
+  }
+  
+  if (conditions.length > 0) {
+    return db.select().from(partsRequests).where(and(...conditions)).orderBy(sql`${partsRequests.createdAt} DESC`);
+  }
+  
+  return db.select().from(partsRequests).orderBy(sql`${partsRequests.createdAt} DESC`);
+}
+
+export async function getUserPartsRequests(userId: number, filters?: { status?: string; search?: string }) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const conditions: any[] = [eq(partsRequests.createdBy, userId)];
+  if (filters?.status) {
+    conditions.push(eq(partsRequests.status, filters.status as any));
+  }
+  if (filters?.search) {
+    const searchPattern = `%${filters.search}%`;
+    conditions.push(
+      or(
+        like(partsRequests.jobId, searchPattern),
+        like(partsRequests.productCode, searchPattern),
+        like(partsRequests.requestedDescription, searchPattern)
+      )
+    );
+  }
+  
+  return db.select().from(partsRequests).where(and(...conditions)).orderBy(sql`${partsRequests.createdAt} DESC`);
+}
+
+export async function updatePartsRequestStatus(id: string, status: string, notes?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updates: any = { status, updatedAt: new Date() };
+  if (notes !== undefined) {
+    updates.notes = notes;
+  }
+  await db.update(partsRequests).set(updates).where(eq(partsRequests.id, id));
+}
+
+export async function getNewPartsRequestsCount() {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql<number>`count(*)` })
+    .from(partsRequests)
+    .where(eq(partsRequests.status, 'new'));
+  return result[0]?.count || 0;
 }

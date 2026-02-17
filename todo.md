@@ -75,3 +75,11 @@
 - [x] Implement grouped dropdown UI component
 - [x] Update Inventory page with grouped navigation
 - [x] Test all category filtering with new UI
+
+## Request Parts Feature
+- [x] Create parts_requests table with RLS policies
+- [x] Add tRPC procedures for creating and managing requests
+- [x] Build /request-parts form page (tech + admin)
+- [x] Build /requests admin inbox page
+- [x] Implement admin notification system (badge + in-app notification)
+- [x] Test complete workflow

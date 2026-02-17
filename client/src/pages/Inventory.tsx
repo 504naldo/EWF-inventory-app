@@ -14,6 +14,27 @@ import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 
+function RequestsBadgeButton({ setLocation }: { setLocation: (path: string) => void }) {
+  const { data } = trpc.partsRequests.getNewCount.useQuery();
+  const count = data?.count || 0;
+
+  return (
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      onClick={() => setLocation("/requests")}
+      className="text-xs md:text-sm relative"
+    >
+      Requests
+      {count > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
+    </Button>
+  );
+}
+
 export default function Inventory() {
   const { user, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
@@ -132,15 +153,26 @@ export default function Inventory() {
             />
           </button>
           <div className="flex items-center gap-2 md:gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setLocation("/request-parts")}
+              className="text-xs md:text-sm"
+            >
+              Request Parts
+            </Button>
             {isAdmin && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setLocation("/users")}
-                className="text-xs md:text-sm"
-              >
-                Users
-              </Button>
+              <>
+                <RequestsBadgeButton setLocation={setLocation} />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setLocation("/users")}
+                  className="text-xs md:text-sm"
+                >
+                  Users
+                </Button>
+              </>
             )}
             <Button 
               variant="ghost" 
