@@ -186,7 +186,7 @@ export async function getAllPartsRequests(filters?: { status?: string; search?: 
     const searchPattern = `%${filters.search}%`;
     conditions.push(
       or(
-        like(partsRequests.jobId, searchPattern),
+        like(partsRequests.buildingId, searchPattern),
         like(partsRequests.productCode, searchPattern),
         like(partsRequests.requestedDescription, searchPattern)
       )
@@ -212,7 +212,7 @@ export async function getUserPartsRequests(userId: number, filters?: { status?: 
     const searchPattern = `%${filters.search}%`;
     conditions.push(
       or(
-        like(partsRequests.jobId, searchPattern),
+        like(partsRequests.buildingId, searchPattern),
         like(partsRequests.productCode, searchPattern),
         like(partsRequests.requestedDescription, searchPattern)
       )
@@ -227,7 +227,7 @@ export async function getPartsRequestById(id: string) {
   if (!db) return null;
   const result = await db.select({
     id: partsRequests.id,
-    jobId: partsRequests.jobId,
+    buildingId: partsRequests.buildingId,
     category: partsRequests.category,
     productCode: partsRequests.productCode,
     requestedDescription: partsRequests.requestedDescription,

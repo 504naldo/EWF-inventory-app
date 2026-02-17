@@ -42,7 +42,7 @@ export type InsertInventoryItem = typeof inventoryItems.$inferInsert;
 
 export const partsRequests = mysqlTable("parts_requests", {
   id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
-  jobId: varchar("job_id", { length: 255 }).notNull(),
+  buildingId: varchar("building_id", { length: 255 }).notNull(),
   category: text("category").notNull(),
   productCode: varchar("product_code", { length: 255 }),
   requestedDescription: text("requested_description").notNull(),

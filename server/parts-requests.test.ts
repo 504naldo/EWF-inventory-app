@@ -36,7 +36,7 @@ describe("Parts Requests", () => {
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.partsRequests.create({
-      jobId: "JOB-12345",
+      buildingId: "123 Main St",
       category: "Batteries",
       productCode: "BATTERY-01",
       requestedDescription: "6V 5AH SLA Battery",
@@ -88,11 +88,11 @@ describe("Parts Requests", () => {
     expect(Array.isArray(newRequests)).toBe(true);
   });
 
-  it("should search requests by job ID", async () => {
+  it("should search requests by building ID", async () => {
     const ctx = createMockContext("admin");
     const caller = appRouter.createCaller(ctx);
 
-    const results = await caller.partsRequests.list({ search: "JOB-" });
+    const results = await caller.partsRequests.list({ search: "Main" });
     expect(Array.isArray(results)).toBe(true);
   });
 

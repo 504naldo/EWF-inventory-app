@@ -136,7 +136,7 @@ export default function Requests() {
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <Input
-            placeholder="Search by job ID, product code, or description..."
+            placeholder="Search by building ID, product code, or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1"
@@ -172,7 +172,7 @@ export default function Requests() {
                 <div key={req.id} className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="font-bold text-sm">Job: {req.jobId}</div>
+                      <div className="font-bold text-sm">Building: {req.buildingId}</div>
                       <div className="text-xs text-gray-600">{req.category}</div>
                     </div>
                     <div className="flex gap-2">
@@ -251,7 +251,7 @@ export default function Requests() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3 font-semibold">Job ID</th>
+                    <th className="text-left p-3 font-semibold">Building ID</th>
                     <th className="text-left p-3 font-semibold">Category</th>
                     <th className="text-left p-3 font-semibold">Product Code</th>
                     <th className="text-left p-3 font-semibold">Description</th>
@@ -265,7 +265,7 @@ export default function Requests() {
                 <tbody>
                   {requests.map((req: any) => (
                     <tr key={req.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3 font-mono text-sm">{req.jobId}</td>
+                      <td className="p-3 font-mono text-sm">{req.buildingId}</td>
                       <td className="p-3 text-sm">{req.category}</td>
                       <td className="p-3 text-sm font-mono">{req.productCode || "-"}</td>
                       <td className="p-3 text-sm max-w-xs truncate">{req.requestedDescription}</td>

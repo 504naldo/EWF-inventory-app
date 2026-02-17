@@ -95,3 +95,8 @@
 - [x] Add Chris (chris@ewandf.ca) as tech user
 - [x] Add Tony (tony@ewandf.ca) as tech user
 - [x] Add Russ (russ@ewandf.ca) as tech user
+
+## Rename Job ID to Building ID
+- [x] Update database schema to rename jobId to buildingId
+- [x] Update backend code and procedures
+- [x] Update frontend forms and labels

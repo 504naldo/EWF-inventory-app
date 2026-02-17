@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export default function RequestParts() {
   const { user, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
-  const [jobId, setJobId] = useState("");
+  const [buildingId, setBuildingId] = useState("");
   const [category, setCategory] = useState("");
   const [productCode, setProductCode] = useState("");
   const [description, setDescription] = useState("");
@@ -25,7 +25,7 @@ export default function RequestParts() {
     onSuccess: (data) => {
       toast.success(`Request submitted! ID: ${data.requestId}`);
       // Reset form
-      setJobId("");
+      setBuildingId("");
       setCategory("");
       setProductCode("");
       setDescription("");
@@ -45,8 +45,8 @@ export default function RequestParts() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!jobId.trim()) {
-      toast.error("Job ID is required");
+    if (!buildingId.trim()) {
+      toast.error("Building ID is required");
       return;
     }
     if (!category) {
@@ -64,7 +64,7 @@ export default function RequestParts() {
     }
 
     createMutation.mutate({
-      jobId: jobId.trim(),
+      buildingId: buildingId.trim(),
       category,
       productCode: productCode.trim() || undefined,
       requestedDescription: description.trim(),
@@ -132,14 +132,14 @@ export default function RequestParts() {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="jobId" className="text-base">
-              Job ID <span className="text-red-500">*</span>
+            <Label htmlFor="buildingId" className="text-base">
+              Building ID <span className="text-red-500">*</span>
             </Label>
             <Input
-              id="jobId"
-              value={jobId}
-              onChange={(e) => setJobId(e.target.value)}
-              placeholder="Enter job ID"
+              id="buildingId"
+              value={buildingId}
+              onChange={(e) => setBuildingId(e.target.value)}
+              placeholder="Enter building ID (e.g., 123 Main St)"
               className="text-base h-12"
               required
             />

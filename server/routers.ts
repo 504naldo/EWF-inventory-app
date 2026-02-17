@@ -119,7 +119,7 @@ export const appRouter = router({
     // Tech + Admin can create requests
     create: protectedProcedure
       .input(z.object({
-        jobId: z.string().min(1),
+        buildingId: z.string().min(1),
         category: z.string().min(1),
         productCode: z.string().optional(),
         requestedDescription: z.string().min(1),
@@ -135,8 +135,8 @@ export const appRouter = router({
         // Notify admin
         try {
           await notifyOwner({
-            title: `New Parts Request: ${input.jobId}`,
-            content: `Job ID: ${input.jobId}\nCategory: ${input.category}\nQty: ${input.quantityRequested}\nDescription: ${input.requestedDescription}\nRequester: ${ctx.user.email || ctx.user.name}\nPriority: ${input.priority}\n\nView at: https://invmanage-qyyacr2d.manus.space/requests`,
+            title: `New Parts Request: ${input.buildingId}`,
+            content: `Building ID: ${input.buildingId}\nCategory: ${input.category}\nQty: ${input.quantityRequested}\nDescription: ${input.requestedDescription}\nRequester: ${ctx.user.email || ctx.user.name}\nPriority: ${input.priority}\n\nView at: https://invmanage-qyyacr2d.manus.space/requests`,
           });
         } catch (error) {
           console.error("Failed to send notification:", error);
@@ -181,8 +181,8 @@ export const appRouter = router({
           try {
             await sendEmail({
               to: request.createdByEmail,
-              subject: `Parts Ready for Pickup - Job ${request.jobId}`,
-              body: `Your parts request for Job ${request.jobId} is now ready for pickup.\n\nDetails:\n- Category: ${request.category}\n- Product Code: ${request.productCode || 'N/A'}\n- Description: ${request.requestedDescription}\n- Quantity: ${request.quantityRequested}\n\nPlease pick up your parts at your earliest convenience.\n\nView request: https://invmanage-qyyacr2d.manus.space/request-parts`,
+              subject: `Parts Ready for Pickup - Building ${request.buildingId}`,
+              body: `Your parts request for Building ${request.buildingId} is now ready for pickup.\n\nDetails:\n- Category: ${request.category}\n- Product Code: ${request.productCode || 'N/A'}\n- Description: ${request.requestedDescription}\n- Quantity: ${request.quantityRequested}\n\nPlease pick up your parts at your earliest convenience.\n\nView request: https://invmanage-qyyacr2d.manus.space/request-parts`,
             });
           } catch (error) {
             console.error("Failed to send email notification:", error);
