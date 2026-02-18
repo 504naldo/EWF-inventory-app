@@ -100,3 +100,9 @@
 - [x] Update database schema to rename jobId to buildingId
 - [x] Update backend code and procedures
 - [x] Update frontend forms and labels
+
+## Consolidate Categories
+- [x] Combine Air Gauge and Water Gauge into single "Gauges" category
+- [x] Consolidate 1/4" accessories into single category
+- [x] Consolidate wire and cable into single category
+- [x] Update notification email to jeff@ewandf.ca

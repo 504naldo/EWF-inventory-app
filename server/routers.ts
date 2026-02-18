@@ -138,6 +138,12 @@ export const appRouter = router({
             title: `New Parts Request: ${input.buildingId}`,
             content: `Building ID: ${input.buildingId}\nCategory: ${input.category}\nQty: ${input.quantityRequested}\nDescription: ${input.requestedDescription}\nRequester: ${ctx.user.email || ctx.user.name}\nPriority: ${input.priority}\n\nView at: https://invmanage-qyyacr2d.manus.space/requests`,
           });
+          // Also send email to Jeff
+          await sendEmail({
+            to: "jeff@ewandf.ca",
+            subject: `New Parts Request: ${input.buildingId}`,
+            body: `A new parts request has been submitted:\n\nBuilding ID: ${input.buildingId}\nCategory: ${input.category}\nProduct Code: ${input.productCode || 'N/A'}\nDescription: ${input.requestedDescription}\nQuantity: ${input.quantityRequested}\nPriority: ${input.priority}\nRequester: ${ctx.user.email || ctx.user.name}\n\nView all requests: https://invmanage-qyyacr2d.manus.space/requests`,
+          });
         } catch (error) {
           console.error("Failed to send notification:", error);
         }

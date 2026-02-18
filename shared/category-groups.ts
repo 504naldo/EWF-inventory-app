@@ -46,11 +46,10 @@ export const CATEGORY_GROUPS: readonly CategoryGroup[] = [
     name: "Tools & Parts",
     icon: "⚙️",
     categories: [
-      "Air Gauge",
-      "Water Gauge",
+      "Gauges",
       "Compressor Parts and Accessories",
-      "1/4\" accessories",
-      "wire and cable",
+      "1/4\" Accessories",
+      "Wire and Cable",
     ],
   },
   {
