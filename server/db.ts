@@ -235,8 +235,10 @@ export async function getPartsRequestById(id: string) {
     priority: partsRequests.priority,
     status: partsRequests.status,
     notes: partsRequests.notes,
+    adminNotes: partsRequests.adminNotes,
     createdBy: partsRequests.createdBy,
     createdByEmail: users.email,
+    createdByName: users.name,
     createdAt: partsRequests.createdAt,
   })
   .from(partsRequests)
@@ -245,12 +247,15 @@ export async function getPartsRequestById(id: string) {
   return result[0] || null;
 }
 
-export async function updatePartsRequestStatus(id: string, status: string, notes?: string) {
+export async function updatePartsRequestStatus(id: string, status: string, notes?: string, adminNotes?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const updates: any = { status, updatedAt: new Date() };
   if (notes !== undefined) {
     updates.notes = notes;
+  }
+  if (adminNotes !== undefined) {
+    updates.adminNotes = adminNotes;
   }
   await db.update(partsRequests).set(updates).where(eq(partsRequests.id, id));
 }

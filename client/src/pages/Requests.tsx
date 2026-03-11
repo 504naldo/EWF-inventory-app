@@ -1,14 +1,14 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Eye } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Requests() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -131,12 +131,12 @@ export default function Requests() {
         </div>
       </header>
 
-      <main className="container py-4 md:py-6">
+      <main className="max-w-7xl mx-auto px-4 py-4 md:py-6">
         <h1 className="text-2xl md:text-3xl font-bold mb-6">Parts Requests</h1>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <Input
-            placeholder="Search by building ID, product code, or description..."
+            placeholder="Search by building, code, description, or requester..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1"
@@ -169,7 +169,11 @@ export default function Requests() {
             {/* Mobile: Card View */}
             <div className="lg:hidden space-y-4">
               {requests.map((req: any) => (
-                <div key={req.id} className="border rounded-lg p-4 space-y-3">
+                <div 
+                  key={req.id} 
+                  className="border rounded-lg p-4 space-y-3 cursor-pointer hover:bg-gray-50 transition"
+                  onClick={() => setLocation(`/requests/${req.id}`)}
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="font-bold text-sm">Building: {req.buildingId}</div>
@@ -217,7 +221,10 @@ export default function Requests() {
                         size="sm" 
                         variant="outline"
                         className="flex-1"
-                        onClick={() => handleQuickUpdate(req.id, "ready")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuickUpdate(req.id, "ready");
+                        }}
                         disabled={updateMutation.isPending}
                       >
                         Mark Ready
@@ -228,7 +235,10 @@ export default function Requests() {
                         size="sm" 
                         variant="outline"
                         className="flex-1"
-                        onClick={() => handleQuickUpdate(req.id, "completed")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuickUpdate(req.id, "completed");
+                        }}
                         disabled={updateMutation.isPending}
                       >
                         Complete
@@ -237,9 +247,12 @@ export default function Requests() {
                     <Button 
                       size="sm" 
                       className="flex-1"
-                      onClick={() => openEditDialog(req)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation(`/requests/${req.id}`);
+                      }}
                     >
-                      Edit
+                      View
                     </Button>
                   </div>
                 </div>
@@ -251,20 +264,25 @@ export default function Requests() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3 font-semibold">Building ID</th>
-                    <th className="text-left p-3 font-semibold">Category</th>
-                    <th className="text-left p-3 font-semibold">Product Code</th>
-                    <th className="text-left p-3 font-semibold">Description</th>
-                    <th className="text-left p-3 font-semibold">Qty</th>
-                    <th className="text-left p-3 font-semibold">Priority</th>
-                    <th className="text-left p-3 font-semibold">Status</th>
-                    <th className="text-left p-3 font-semibold">Created</th>
-                    <th className="text-left p-3 font-semibold">Actions</th>
+                    <th className="text-left p-3 font-semibold text-sm">Building ID</th>
+                    <th className="text-left p-3 font-semibold text-sm">Category</th>
+                    <th className="text-left p-3 font-semibold text-sm">Product Code</th>
+                    <th className="text-left p-3 font-semibold text-sm">Description</th>
+                    <th className="text-left p-3 font-semibold text-sm">Qty</th>
+                    <th className="text-left p-3 font-semibold text-sm">Priority</th>
+                    <th className="text-left p-3 font-semibold text-sm">Status</th>
+                    <th className="text-left p-3 font-semibold text-sm">Requested By</th>
+                    <th className="text-left p-3 font-semibold text-sm">Created</th>
+                    <th className="text-left p-3 font-semibold text-sm">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {requests.map((req: any) => (
-                    <tr key={req.id} className="border-b hover:bg-gray-50">
+                    <tr 
+                      key={req.id} 
+                      className="border-b hover:bg-gray-50 cursor-pointer transition"
+                      onClick={() => setLocation(`/requests/${req.id}`)}
+                    >
                       <td className="p-3 font-mono text-sm">{req.buildingId}</td>
                       <td className="p-3 text-sm">{req.category}</td>
                       <td className="p-3 text-sm font-mono">{req.productCode || "-"}</td>
@@ -282,14 +300,29 @@ export default function Requests() {
                           {req.status}
                         </span>
                       </td>
+                      <td className="p-3 text-sm">{req.createdByName || req.createdByEmail || "Unknown"}</td>
                       <td className="p-3 text-sm">{new Date(req.createdAt).toLocaleDateString()}</td>
                       <td className="p-3">
                         <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLocation(`/requests/${req.id}`);
+                            }}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
                           {req.status !== "ready" && req.status !== "completed" && (
                             <Button 
                               size="sm" 
                               variant="outline"
-                              onClick={() => handleQuickUpdate(req.id, "ready")}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuickUpdate(req.id, "ready");
+                              }}
                               disabled={updateMutation.isPending}
                             >
                               Ready
@@ -299,19 +332,15 @@ export default function Requests() {
                             <Button 
                               size="sm" 
                               variant="outline"
-                              onClick={() => handleQuickUpdate(req.id, "completed")}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleQuickUpdate(req.id, "completed");
+                              }}
                               disabled={updateMutation.isPending}
                             >
                               Complete
                             </Button>
                           )}
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => openEditDialog(req)}
-                          >
-                            Edit
-                          </Button>
                         </div>
                       </td>
                     </tr>

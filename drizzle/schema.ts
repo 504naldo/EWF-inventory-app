@@ -1,59 +1,47 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
-
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
-export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
-  id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
-  email: varchar("email", { length: 320 }),
-  password: varchar("password", { length: 255 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["admin", "tech"]).default("tech").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
-});
-
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, varchar, text, int, timestamp, mysqlEnum } from "drizzle-orm/mysql-core"
+import { sql } from "drizzle-orm"
 
 export const inventoryItems = mysqlTable("inventory_items", {
-  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
-  category: text("category").notNull(),
-  productCode: varchar("product_code", { length: 255 }).notNull().unique(),
-  productDescription: text("product_description").notNull(),
-  quantity: int("quantity").notNull().default(0),
-  currentCost: int("current_cost").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
-});
-
-export type InventoryItem = typeof inventoryItems.$inferSelect;
-export type InsertInventoryItem = typeof inventoryItems.$inferInsert;
+	id: varchar({ length: 36 }).notNull(),
+	category: text().notNull(),
+	productCode: varchar("product_code", { length: 255 }).notNull(),
+	productDescription: text("product_description").notNull(),
+	quantity: int().default(0).notNull(),
+	currentCost: int("current_cost").default(0).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("inventory_items_product_code_unique").on(table.productCode),
+]);
 
 export const partsRequests = mysqlTable("parts_requests", {
-  id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => crypto.randomUUID()),
-  buildingId: varchar("building_id", { length: 255 }).notNull(),
-  category: text("category").notNull(),
-  productCode: varchar("product_code", { length: 255 }),
-  requestedDescription: text("requested_description").notNull(),
-  quantityRequested: int("quantity_requested").notNull(),
-  priority: mysqlEnum("priority", ["normal", "urgent"]).default("normal").notNull(),
-  status: mysqlEnum("status", ["new", "ordered", "ready", "completed", "denied"]).default("new").notNull(),
-  notes: text("notes"),
-  createdBy: int("created_by").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+	id: varchar({ length: 36 }).notNull(),
+	buildingId: varchar("building_id", { length: 255 }).notNull(),
+	category: text().notNull(),
+	productCode: varchar("product_code", { length: 255 }),
+	requestedDescription: text("requested_description").notNull(),
+	quantityRequested: int("quantity_requested").notNull(),
+	priority: mysqlEnum(['normal','urgent']).default('normal').notNull(),
+	status: mysqlEnum(['new','ordered','ready','completed','denied']).default('new').notNull(),
+	notes: text(),
+	createdBy: int("created_by").notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
-export type PartsRequest = typeof partsRequests.$inferSelect;
-export type InsertPartsRequest = typeof partsRequests.$inferInsert;
+export const users = mysqlTable("users", {
+	id: int().autoincrement().notNull(),
+	openId: varchar({ length: 64 }).notNull(),
+	name: text(),
+	email: varchar({ length: 320 }),
+	loginMethod: varchar({ length: 64 }),
+	role: mysqlEnum(['admin','tech']).default('tech').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	password: varchar({ length: 255 }),
+},
+(table) => [
+	index("users_openId_unique").on(table.openId),
+]);

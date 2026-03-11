@@ -165,12 +165,23 @@ export const appRouter = router({
         }
       }),
 
+    // Admin can get a single request by ID
+    getById: protectedProcedure
+      .input(z.object({ id: z.string() }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin only' });
+        }
+        return db.getPartsRequestById(input.id);
+      }),
+
     // Admin can update status and notes
     updateStatus: protectedProcedure
       .input(z.object({
         id: z.string(),
         status: z.enum(['new', 'ordered', 'ready', 'completed', 'denied']),
         notes: z.string().optional(),
+        adminNotes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         if (ctx.user.role !== 'admin') {
@@ -180,7 +191,7 @@ export const appRouter = router({
         // Get request details before updating to send notification
         const request = await db.getPartsRequestById(input.id);
         
-        await db.updatePartsRequestStatus(input.id, input.status, input.notes);
+        await db.updatePartsRequestStatus(input.id, input.status, input.notes, input.adminNotes);
         
         // Send email notification when status changes to 'ready'
         if (input.status === 'ready' && request && request.createdByEmail) {

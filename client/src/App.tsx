@@ -10,6 +10,7 @@ import Users from "./pages/Users";
 import ApiDocs from "./pages/ApiDocs";
 import RequestParts from "./pages/RequestParts";
 import Requests from "./pages/Requests";
+import RequestDetail from "./pages/RequestDetail";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path={"/users"} component={Users} />
       <Route path={"/api-docs"} component={ApiDocs} />
       <Route path={"/request-parts"} component={RequestParts} />
+      <Route path={"/requests/:id"} component={RequestDetail} />
       <Route path={"/requests"} component={Requests} />
       <Route path={"/"} component={Inventory} />
       <Route path={"/404"} component={NotFound} />
