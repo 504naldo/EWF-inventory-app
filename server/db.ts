@@ -225,31 +225,26 @@ export async function getUserPartsRequests(userId: number, filters?: { status?: 
 export async function getPartsRequestById(id: string) {
   const db = await getDb();
   if (!db) return null;
-  try {
-    const result = await db.select({
-      id: partsRequests.id,
-      buildingId: partsRequests.buildingId,
-      category: partsRequests.category,
-      productCode: partsRequests.productCode,
-      requestedDescription: partsRequests.requestedDescription,
-      quantityRequested: partsRequests.quantityRequested,
-      priority: partsRequests.priority,
-      status: partsRequests.status,
-      notes: partsRequests.notes,
-      adminNotes: partsRequests.adminNotes,
-      createdBy: partsRequests.createdBy,
-      createdByEmail: users.email,
-      createdByName: users.name,
-      createdAt: partsRequests.createdAt,
-    })
-    .from(partsRequests)
-    .leftJoin(users, eq(partsRequests.createdBy, users.id))
-    .where(eq(partsRequests.id, id));
-    return result && result.length > 0 ? result[0] : null;
-  } catch (error) {
-    console.error("Error fetching parts request:", error);
-    return null;
-  }
+  const result = await db.select({
+    id: partsRequests.id,
+    buildingId: partsRequests.buildingId,
+    category: partsRequests.category,
+    productCode: partsRequests.productCode,
+    requestedDescription: partsRequests.requestedDescription,
+    quantityRequested: partsRequests.quantityRequested,
+    priority: partsRequests.priority,
+    status: partsRequests.status,
+    notes: partsRequests.notes,
+    adminNotes: partsRequests.adminNotes,
+    createdBy: partsRequests.createdBy,
+    createdByEmail: users.email,
+    createdByName: users.name,
+    createdAt: partsRequests.createdAt,
+  })
+  .from(partsRequests)
+  .leftJoin(users, eq(partsRequests.createdBy, users.id))
+  .where(eq(partsRequests.id, id));
+  return result[0] || null;
 }
 
 export async function updatePartsRequestStatus(id: string, status: string, notes?: string, adminNotes?: string) {

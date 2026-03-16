@@ -17,15 +17,10 @@ export default function RequestDetail() {
   const [isSaving, setIsSaving] = useState(false);
 
   const utils = trpc.useUtils();
-  const { data: request, isLoading, error } = trpc.partsRequests.getById.useQuery(
+  const { data: request, isLoading } = trpc.partsRequests.getById.useQuery(
     { id: params?.id || "" },
     { enabled: !!params?.id && !!user && user.role === "admin" }
   );
-
-  // Log error for debugging
-  if (error) {
-    console.error("Error fetching request:", error);
-  }
 
   const updateMutation = trpc.partsRequests.updateStatus.useMutation({
     onSuccess: () => {
@@ -88,7 +83,7 @@ export default function RequestDetail() {
     );
   }
 
-  if (error || !request) {
+  if (!request) {
     return (
       <div className="min-h-screen bg-white">
         <header className="sticky top-0 z-50 border-b bg-white">
@@ -110,10 +105,7 @@ export default function RequestDetail() {
         </header>
         <main className="container py-6">
           <div className="text-center text-gray-500">
-            {error ? `Error loading request: ${error.message}` : "Request not found"}
-          </div>
-          <div className="text-center mt-4">
-            <Button onClick={() => setLocation("/requests")}>Back to Requests</Button>
+            Request not found
           </div>
         </main>
       </div>
