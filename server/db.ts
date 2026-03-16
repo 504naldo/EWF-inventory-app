@@ -1,6 +1,6 @@
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, inventoryItems, InsertInventoryItem, InventoryItem, partsRequests, InsertPartsRequest } from "../drizzle/schema";
+import { users, inventoryItems, partsRequests } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -18,7 +18,7 @@ export async function getDb() {
   return _db;
 }
 
-export async function upsertUser(user: InsertUser): Promise<void> {
+export async function upsertUser(user: any): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
   }
@@ -30,7 +30,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const values: InsertUser = {
+    const values: any = {
       openId: user.openId,
     };
     const updateSet: Record<string, unknown> = {};
@@ -113,13 +113,13 @@ export async function searchInventoryItems(query: string) {
   );
 }
 
-export async function createInventoryItem(item: InsertInventoryItem) {
+export async function createInventoryItem(item: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.insert(inventoryItems).values(item);
 }
 
-export async function updateInventoryItem(id: string, updates: Partial<InventoryItem>) {
+export async function updateInventoryItem(id: string, updates: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(inventoryItems).set(updates).where(eq(inventoryItems.id, id));
@@ -167,11 +167,31 @@ export async function getUserById(id: number) {
 }
 
 // Parts Requests
-export async function createPartsRequest(request: InsertPartsRequest) {
+export async function createPartsRequest(request: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(partsRequests).values(request);
-  return result[0]?.insertId || crypto.randomUUID();
+  
+  // Map form fields to database schema
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  
+  const dbRecord = {
+    id,
+    buildingId: request.buildingId,
+    category: request.category,
+    productCode: request.productCode || null,
+    requestedDescription: request.requestedDescription,
+    quantityRequested: request.quantityRequested,
+    priority: request.priority || 'normal',
+    status: 'new',
+    notes: null,
+    createdBy: request.createdBy,
+    createdAt: now,
+    updatedAt: now,
+  };
+  
+  await db.insert(partsRequests).values(dbRecord);
+  return id;
 }
 
 export async function getAllPartsRequests(filters?: { status?: string; search?: string }) {
