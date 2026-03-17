@@ -1,0 +1,3 @@
+[33mfb8df5d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Sync pnpm lockfile
+[33me6de364[m hmmm
+[33m6bb819f[m Checkpoint: Fixed database insert error in Request Parts form: 1. Updated createPartsRequest function to properly map form fields to database schema 2. Correctly maps all fields: buildingId, category, productCode, requestedDescription, quantityRequested, priority 3. Sets default values: status='new', notes=null, createdAt/updatedAt timestamps 4. Generates UUID for request ID 5. Restored all corrupted files from git history 6. Form submission should now succeed without database errors
