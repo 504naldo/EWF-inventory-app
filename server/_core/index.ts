@@ -1,43 +1,25 @@
-import "dotenv/config";
-import express from "express";
-import { createServer } from "http";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
+import express from 'express';
 
-async function startServer() {
-  const app = express();
-  const server = createServer(app);
+const app = express();
 
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
-  registerOAuthRoutes(app);
-
-  app.use(
-    "/api/trpc",
-    createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
-  );
-
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  const port = parseInt(process.env.PORT || "8080", 10);
-
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server running on port ${port}`);
-  });
+const oauthServerUrl = process.env.OAUTH_SERVER_URL;
+if (!oauthServerUrl) {
+  console.warn('[config] OAUTH_SERVER_URL is not set; OAuth integrations are disabled.');
 }
 
-startServer().catch(error => {
-  console.error("Server failed to start:", error);
-  process.exit(1);
+const PORT = Number(process.env.PORT || 8080);
+const HOST = '0.0.0.0';
+
+app.get('/', (_req, res) => {
+  res.send('EWF Inventory API running');
 });
+
+app.get('/health', (_req, res) => {
+  res.json({ ok: true, oauthConfigured: Boolean(oauthServerUrl) });
+});
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server listening on ${HOST}:${PORT}`);
+});
+
+export default app;
