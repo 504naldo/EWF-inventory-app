@@ -1,14 +1,14 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, varchar, text, int, timestamp, mysqlEnum } from "drizzle-orm/mysql-core"
+import { mysqlTable, primaryKey, index, varchar, text, int, timestamp, mysqlEnum } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const inventoryItems = mysqlTable("inventory_items", {
-	id: varchar({ length: 36 }).notNull(),
+	id: varchar({ length: 36 }).notNull().primaryKey(),
 	category: text().notNull(),
 	productCode: varchar("product_code", { length: 255 }).notNull(),
 	productDescription: text("product_description").notNull(),
 	quantity: int().default(0).notNull(),
 	currentCost: int("current_cost").default(0).notNull(),
-	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 },
 (table) => [
@@ -16,7 +16,7 @@ export const inventoryItems = mysqlTable("inventory_items", {
 ]);
 
 export const partsRequests = mysqlTable("parts_requests", {
-	id: varchar({ length: 36 }).notNull(),
+	id: varchar({ length: 36 }).notNull().primaryKey(),
 	buildingId: varchar("building_id", { length: 255 }).notNull(),
 	category: text().notNull(),
 	productCode: varchar("product_code", { length: 255 }),
@@ -27,20 +27,20 @@ export const partsRequests = mysqlTable("parts_requests", {
 	notes: text(),
 	adminNotes: text("admin_notes"),
 	createdBy: int("created_by").notNull(),
-	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
 
 export const users = mysqlTable("users", {
-	id: int().autoincrement().notNull(),
+	id: int().autoincrement().notNull().primaryKey(),
 	openId: varchar({ length: 64 }).notNull(),
 	name: text(),
 	email: varchar({ length: 320 }),
 	loginMethod: varchar({ length: 64 }),
 	role: mysqlEnum(['admin','tech']).default('tech').notNull(),
-	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	createdAt: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
-	lastSignedIn: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
+	lastSignedIn: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	password: varchar({ length: 255 }),
 },
 (table) => [
