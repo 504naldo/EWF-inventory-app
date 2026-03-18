@@ -1,4 +1,3 @@
-cat > drizzle/schema.ts << 'EOF'
 import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, varchar, text, int, timestamp, mysqlEnum } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
@@ -52,4 +51,3 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type InventoryItem = typeof inventoryItems.$inferSelect;
 export type PartsRequest = typeof partsRequests.$inferSelect;
-EOF
