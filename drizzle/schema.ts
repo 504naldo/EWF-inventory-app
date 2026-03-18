@@ -1,3 +1,4 @@
+cat > drizzle/schema.ts << 'EOF'
 import { mysqlTable, mysqlSchema, AnyMySqlColumn, index, varchar, text, int, timestamp, mysqlEnum } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
@@ -25,6 +26,7 @@ export const partsRequests = mysqlTable("parts_requests", {
 	priority: mysqlEnum(['normal','urgent']).default('normal').notNull(),
 	status: mysqlEnum(['new','ordered','ready','completed','denied']).default('new').notNull(),
 	notes: text(),
+	adminNotes: text("admin_notes"),
 	createdBy: int("created_by").notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().onUpdateNow().notNull(),
@@ -45,3 +47,9 @@ export const users = mysqlTable("users", {
 (table) => [
 	index("users_openId_unique").on(table.openId),
 ]);
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type InventoryItem = typeof inventoryItems.$inferSelect;
+export type PartsRequest = typeof partsRequests.$inferSelect;
+EOF

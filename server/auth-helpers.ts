@@ -1,14 +1,24 @@
-import bcrypt from 'bcrypt';
 import { SignJWT, jwtVerify } from 'jose';
+import { scrypt, randomBytes, timingSafeEqual } from 'node:crypto';
+import { promisify } from 'node:util';
 
-const SALT_ROUNDS = 10;
+const scryptAsync = promisify(scrypt);
+const KEY_LENGTH = 64;
 
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, SALT_ROUNDS);
+  const salt = randomBytes(16).toString('hex');
+  const derived = (await scryptAsync(password, salt, KEY_LENGTH)) as Buffer;
+  return salt + ':' + derived.toString('hex');
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  const parts = hash.split(':');
+  const salt = parts[0];
+  const key = parts[1];
+  if (!salt || !key) return false;
+  const derived = (await scryptAsync(password, salt, KEY_LENGTH)) as Buffer;
+  const keyBuffer = Buffer.from(key, 'hex');
+  return timingSafeEqual(derived, keyBuffer);
 }
 
 export async function generateToken(userId: number, email: string, role: string): Promise<string> {
