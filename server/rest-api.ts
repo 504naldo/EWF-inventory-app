@@ -46,15 +46,25 @@ restApiRouter.post('/auth/login', async (req, res) => {
     // Generate JWT token
     const token = await generateToken(user.id, user.email!, user.role);
 
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
-    });
+    // Set session cookie so tRPC auth.me works too
+      const cookieOpts = {
+        httpOnly: true,
+        path: '/',
+        sameSite: 'lax' as const,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      };
+      res.cookie('auth_token', token, cookieOpts);
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
