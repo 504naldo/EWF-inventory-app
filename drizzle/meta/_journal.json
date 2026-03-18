@@ -43,6 +43,13 @@
       "when": 1773248827460,
       "tag": "0005_long_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1773862689261,
+      "tag": "0006_easy_viper",
+      "breakpoints": true
     }
   ]
 }
